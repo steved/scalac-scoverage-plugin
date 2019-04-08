@@ -19,12 +19,8 @@ val appSettings = Seq(
     parallelExecution in Test := false,
     scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8"),
     concurrentRestrictions in Global += Tags.limit(Tags.Test, 1),
-    publishTo := {
-      if (isSnapshot.value)
-        Some("snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
-      else
-        Some("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
-    },
+    publishTo := Some("Artifactory Realm" at "https://domino.jfrog.io/domino/domino-open-source"),
+    credentials += Credentials("Artifactory Realm", "domino.jfrog.io", "username", "password"),
     pomExtra := {
       <url>https://github.com/scoverage/scalac-scoverage-plugin</url>
         <licenses>
@@ -63,7 +59,7 @@ lazy val root = Project("scalac-scoverage", file("."))
 
 lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"))(JVMPlatform, JSPlatform)
     .crossType(CrossType.Full)
-    .settings(name := "scalac-scoverage-runtime")
+    .settings(name := "scalac-scoverage-runtime_domino")
     .settings(appSettings: _*)
     .jvmSettings(
       libraryDependencies ++= Seq(
@@ -81,7 +77,7 @@ lazy val `scalac-scoverage-runtimeJS` = runtime.js
 
 lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
     .dependsOn(`scalac-scoverage-runtimeJVM` % "test")
-    .settings(name := "scalac-scoverage-plugin")
+    .settings(name := "scalac-scoverage-plugin_domino")
     .settings(appSettings: _*)
     .settings(libraryDependencies ++= Seq(
     "org.mockito" % "mockito-core" % MockitoVersion % "test",
